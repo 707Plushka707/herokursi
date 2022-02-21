@@ -54,6 +54,7 @@ async function getRSI(symbol, timer, period) {
       })
     }
     catch (err) {
+      console.log('**** fetch error - limit IP')
       reject(err)
     }
 
@@ -218,7 +219,6 @@ const main = async () => {
     fs.writeFile('rsi.json', JSON.stringify(data), err => {
       const t = new Date();
       if (err) {
-
         console.log("DB Error :" + t)
         console.log('Start Again')
         return
