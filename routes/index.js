@@ -228,7 +228,7 @@ const main = async () => {
         console.log('End')
         console.log('===========================')
       }
-      delay(10 * 1000).then(data => {
+      delay(15 * 1000).then(data => {
         main()
       });
 
