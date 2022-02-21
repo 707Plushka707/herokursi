@@ -1,0 +1,490 @@
+<!doctype html>
+<!--
+* Tabler - Premium and Open Source dashboard template with responsive and high quality UI.
+* @version 1.0.0-beta5
+* @link https://tabler.io
+* Copyright 2018-2021 The Tabler Authors
+* Copyright 2018-2021 codecalm.net Paweł Kuna
+* Licensed under MIT (https://github.com/tabler/tabler/blob/master/LICENSE)
+-->
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Asic Dashboard </title>
+  <!-- CSS files -->
+  <link href="./dist/css/tabler.min.css" rel="stylesheet" />
+  <link href="./dist/css/demo.min.css" rel="stylesheet" />
+  <script src="./dist/js/tabler.min.js"></script>
+  <script src="./dist/js/vue.js"></script>
+  <script src="./vue/board.vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <style>
+    .normalTemp {
+      background-color: green;
+      color: white;
+    }
+
+    .highTemp {
+      background-color: red;
+      color: white
+    }
+
+    .toast {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+
+    .blink_me {
+      animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+      50% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper" id="app">
+
+    <header class="navbar navbar-expand-md navbar-light d-print-none">
+      <div class="container-xl">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+          <a href=".">
+            <img src="./static/logo.svg" width="110" height="32" alt="Tabler" class="navbar-brand-image">
+          </a>
+        </h1>
+
+      </div>
+    </header>
+    <div class="page-wrapper">
+
+
+      <div class="container-xl">
+        <!-- Page title -->
+        <div class="page-header d-print-none">
+          <div class="row align-items-center">
+            <div class="col">
+              <!-- Page pre-title -->
+              <div class="page-pretitle">
+                Overview
+              </div>
+              <h2 class="page-title">
+                Dashboard
+              </h2>
+            </div>
+            <!-- Page title actions -->
+            <div class="col-auto ms-auto d-print-none">
+              <div class="btn-list">
+
+                <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
+                  data-bs-target="#modal-report">
+                  <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+
+                  Cấu Hình
+                </a>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">RSI (14) Rate</h3>
+        </div>
+        <div>
+          <input :value="rsi15Rule">
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="container-xl">
+          <div class="row row-deck row-cards">
+
+            <div class="col-12">
+              <div class="card">
+
+
+                <div class="table-responsive">
+
+                  <div v-if="dataReady" class="table-responsive">
+                    <table class="text-center table table-hover card-table table-vcenter text-nowrap datatable">
+                      <thead>
+                        <tr>
+                          <th>Pair</th>
+                          <th>RSI 15M</th>
+                          <th>RSI 5M</th>
+                          <th>Price</th>
+                          <th>Volume</th>
+                          <th>Link Binance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(item,index) in listpair" :key="index">
+                          <td> <span class="blink_me badge bg-success me-1"></span>
+                            {{item.name}}
+                          </td>
+                          <td>
+                            <span v-if="item.rsi>60" class="blink_me badge bg-success me-1"></span>
+                            {{getRSI15M(item)}}
+                          </td>
+                          <td>
+
+                            <span v-if="item.rsi>60" class="blink_me badge bg-success me-1"></span>
+                            {{getRSI5M(item)}}
+
+                          </td>
+                          <td>
+
+                            <span v-if="item.rsi>60" class="blink_me badge bg-success me-1"></span>
+                            {{getPrice(item)}}
+
+                          </td>
+                          <td>
+
+                            <span v-if="item.rsi>60" class="blink_me badge bg-success me-1"></span>
+                            {{(getVolume(item))}}
+
+                          </td>
+                          <td>
+
+                            <a href="https://www.tradingview.com/chart/luPP0Jzu/?symbol=BINANCE%3ABTCUSDT">Link
+                              Binance</a>
+                          </td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">Showing <span>1</span> of <span>{{listpair.length}}</span> entries</p>
+
+                  </div>
+                </div>
+              </div>
+              <div v-else class="col-12">
+                <div class="row row-cards">
+                  <div class="col-12">
+                    <div class="card">
+                      <ul class="list-group list-group-flush placeholder-glow">
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div class="row align-items-center">
+                            <div class="col-auto">
+                              <div class="avatar avatar-rounded placeholder"></div>
+                            </div>
+                            <div class="col-7">
+                              <div class="placeholder placeholder-xs col-9"></div>
+                              <div class="placeholder placeholder-xs col-7"></div>
+                            </div>
+                            <div class="col-2 ms-auto text-end">
+                              <div class="placeholder placeholder-xs col-8"></div>
+                              <div class="placeholder placeholder-xs col-10"></div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-indeterminate bg-green"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <footer class="footer footer-transparent d-print-none">
+      <div class="container-xl">
+        <div class="row text-center align-items-center flex-row-reverse">
+          <div class="col-lg-auto ms-lg-auto">
+            <ul class="list-inline list-inline-dots mb-0">
+              <li class="list-inline-item"><a href="./docs/index.html" class="link-secondary">Documentation</a></li>
+              <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
+              <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank"
+                  class="link-secondary" rel="noopener">Source code</a></li>
+              <li class="list-inline-item">
+                <a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary" rel="noopener">
+                  <!-- Download SVG icon from http://tabler-icons.io/i/heart -->
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon text-pink icon-filled icon-inline" width="24"
+                    height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M19.5 13.572l-7.5 7.428l-7.5 -7.428m0 0a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                  </svg>
+                  Sponsor
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+            <ul class="list-inline list-inline-dots mb-0">
+              <li class="list-inline-item">
+                Copyright &copy; 2021
+                <a href="." class="link-secondary">Tabler</a>.
+                All rights reserved.
+              </li>
+              <li class="list-inline-item">
+                <a href="./changelog.html" class="link-secondary" rel="noopener">
+                  v1.0.0-beta5
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  </div>
+
+
+  <!-- Libs JS -->
+
+  <script>
+    function compare(a, b) {
+      if (a.rsi && b.rsi) {
+        if (a.rsi > b.rsi) {
+          return -1;
+        }
+        if (a.rsi < b.rsi) {
+          return 1;
+        }
+        return 0;
+      } else {
+        return 0;
+      }
+
+    }
+
+    Vue.component("myboard", myboard);
+
+
+    var app = new Vue({
+      el: '#app',
+
+      data: {
+        fields: [],
+        items: [],
+        listpair: [],
+        dataReady: false,
+        fetchStatus: false,
+        rsi15Rule: 0,
+      },
+      computed: {
+
+      },
+      async mounted() {
+        this.getData();
+        setInterval(() => { this.getData() }, 2000)//chay moi 5p 1 lan
+      },
+      methods: {
+        getPrice(item) {
+          let price = parseFloat(item.info.close)
+
+          return price.toFixed(4);
+        },
+        getVolume(item) {
+          let volume = parseFloat(item.info.volume)
+          return volume.toFixed(0);
+        },
+        getRSI15M(item) {
+          let result;
+          if (item.rsi15m) {
+            result = item.rsi15m.RSI
+          } else {
+            result = 'x'
+          }
+          return result
+        },
+
+        getRSI5M(item) {
+          let result;
+          if (item.rsi5m) {
+            result = item.rsi5m.RSI
+          } else {
+            result = 'x'
+          }
+          return result
+        },
+        getName5M(item) {
+          return 1
+        },
+        getName15M(item) {
+          let result;
+          if (item[0].time === '15m') {
+            result = item[0]
+          } else {
+            return ""
+          }
+          console.log(result)
+          return result.RSI
+        },
+        filterRSI() {
+
+        },
+        getData() {
+          // this.dataReady = false;
+          console.log('fetch...')
+          fetch('/rsi').then(data => data.json()).then(data => {
+            //  console.log(data)
+            let list = []
+            data.forEach(element => {
+              if (element) {
+                list.push(element)
+              }
+            });
+            list = list.sort(compare);
+            list = _.groupBy(list, "name")
+
+            let newList = []
+            _.forOwn(list, (value, key) => {
+              let rsi15;
+              let rsi5;
+              let d = value
+              for (let i = 0; i < 2; i++) {
+                if (d[i]) {
+                  if (d[i].time === "5m") {
+                    rsi5 = d[i]
+                  } if (d[i].time === "15m") {
+                    rsi15 = d[i]
+                  }
+                } else {
+                  if (rsi15) {
+                    rsi5 = null
+                  }
+                  if (rsi5) {
+                    rsi15 = null
+                  }
+                }
+              }
+
+
+              let newObject = {
+                "name": key,
+                "rsi15m": rsi15,
+                "rsi5m": rsi5,
+                ...value[0]
+              }
+              if (rsi15) {
+                newList.push(newObject)
+              }
+
+            });
+            
+            this.listpair = newList
+            this.dataReady = true;
+          })
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>
