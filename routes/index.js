@@ -13,7 +13,8 @@ const binance = new Binance().options({
 });
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'RSI' });
+  //res.render('index', { title: 'RSI' });
+  res.send("hello")
 });
 router.get('/rsi', (req, res, next) => {
   res.header("Content-Type", 'application/json');
@@ -27,7 +28,7 @@ async function getRSI(symbol, timer, period) {
     try {
       binance.candlesticks(symbol, timer, (error, ticks, symbol) => {
         if (error) {
-          console.log(error)
+        
           reject(error)
         } else {
           let lastClose = []
@@ -217,7 +218,7 @@ const main = async () => {
     fs.writeFile('rsi.json', JSON.stringify(data), err => {
       const t = new Date();
       if (err) {
-        console.log(err)
+       
         console.log("DB Error :" + t)
         console.log('Start Again')
         return
