@@ -28,7 +28,7 @@ async function getRSI(symbol, timer, period) {
     try {
       binance.candlesticks(symbol, timer, (error, ticks, symbol) => {
         if (error) {
-        
+
           reject(error)
         } else {
           let lastClose = []
@@ -63,7 +63,7 @@ async function getRSI(symbol, timer, period) {
 }
 const main = async () => {
 
-  console.time("Running" );
+  console.time("Running");
   let pairList = [
     "RAYUSDT",
     "SUSHIUSDT",
@@ -218,7 +218,7 @@ const main = async () => {
     fs.writeFile('rsi.json', JSON.stringify(data), err => {
       const t = new Date();
       if (err) {
-       
+
         console.log("DB Error :" + t)
         console.log('Start Again')
         return
@@ -228,8 +228,7 @@ const main = async () => {
         console.log('End')
         console.log('===========================')
       }
-      delay(10*1000).then(data => {
-
+      delay(10 * 1000).then(data => {
         main()
       });
 
