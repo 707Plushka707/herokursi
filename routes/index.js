@@ -485,17 +485,16 @@ const main = async () => {
         let rsiNotifi = result.filter((item) => {
           return (item.currentValue.rsi15m >= 80)
         });
-
-        console.log(rsiNotifi)
+        let strMes = ''
         if (rsiNotifi.length > 0) {
-          let message = {
-            app_id: "e3e0074e-abff-4ff2-80a7-8e6aaea73bf1",
-            contents: { "en": `Có ${rsiNotifi.length} cặp có RSI trên 80, vào mà húp` },
-            included_segments: ["Subscribed Users"]
-          };
-          sendNotification(message);
+          strMes = `Có ${rsiNotifi.length} cặp có RSI trên 80.`
         }
-
+        let message = {
+          app_id: "e3e0074e-abff-4ff2-80a7-8e6aaea73bf1",
+          contents: { "en": strMes },
+          included_segments: ["Subscribed Users"]
+        };
+        sendNotification(message);
         fs.writeFile('rsi.json', JSON.stringify(result), err => {
           const t = new Date();
           if (err) {
@@ -544,7 +543,7 @@ var sendNotification = function (data) {
   var https = require('https');
   var req = https.request(options, function (res) {
     res.on('data', function (data) {
-      console.log('Gửi đi cho các tình yêu')
+      console.log('Sent OK.')
     });
   });
 
