@@ -15,7 +15,7 @@ const binance = new Binance().options({
 });
 
 var indicator = {
-  RSI_period: 12,
+  RSI_period: 6,
   BB_period: 20,
   DataFrame_period: ['5m', '15m']
 }
