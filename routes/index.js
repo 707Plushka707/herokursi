@@ -43,7 +43,7 @@ router.get('/getAccount', async function (req, res, next) {
   console.log(acc)
   let account = await AccAnhKien.futuresPrices();
   console.log(account)
-  res.send("hello")
+  res.send(acc)
 });
 
 /**/
