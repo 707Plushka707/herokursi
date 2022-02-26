@@ -454,7 +454,6 @@ const main = async () => {
   Promise.all(TokenList).then(data => {
     if (data) {
       DataProcess(data).then(data => {
-
         //data là dữ liệu mới
         //neu oldDataRSI chưa có gì thì lưu old thành dữ liệu hiện tại
         let old, current;
@@ -483,6 +482,20 @@ const main = async () => {
             }
           })
         })
+        let rsiNotifi = result.filter((item) => {
+          return (item.currentValue.rsi15m >= 80)
+        });
+
+        console.log(rsiNotifi)
+        if (rsiNotifi.length > 0) {
+          let message = {
+            app_id: "e3e0074e-abff-4ff2-80a7-8e6aaea73bf1",
+            contents: { "en": `Có ${rsiNotifi.length} cặp có RSI trên 80, vào mà húp` },
+            included_segments: ["Subscribed Users"]
+          };
+          sendNotification(message);
+        }
+
         fs.writeFile('rsi.json', JSON.stringify(result), err => {
           const t = new Date();
           if (err) {
@@ -514,5 +527,34 @@ const main = async () => {
 }
 
 main();
+var sendNotification = function (data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": "Basic MTZjZTA2NTMtNDdhNC00MjMwLThhMzctMDg5ZmNkNWRjNTFh"
+  };
+
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+
+  var https = require('https');
+  var req = https.request(options, function (res) {
+    res.on('data', function (data) {
+      console.log('Gửi đi cho các tình yêu')
+    });
+  });
+
+  req.on('error', function (e) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+
+  req.write(JSON.stringify(data));
+  req.end();
+};
 
 module.exports = router;
