@@ -8,7 +8,6 @@ const Binance = require('node-binance-api');
 var RSI = require('technicalindicators').RSI;
 var BB = require('technicalindicators').BollingerBands;
 var _ = require('lodash');
-const { resourceUsage } = require('process');
 
 const binance = new Binance().options({
   APIKEY: 'sDZIAFhiLkf9k9ii4DHMVXIjtaqTE833Kp7Gjigg68KfvndwhfhlPkyz0Ofq3aRI',
