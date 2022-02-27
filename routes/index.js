@@ -8,6 +8,7 @@ const Binance = require('node-binance-api');
 var RSI = require('technicalindicators').RSI;
 var BB = require('technicalindicators').BollingerBands;
 var _ = require('lodash');
+const { resourceUsage } = require('process');
 
 const binance = new Binance().options({
   APIKEY: 'sDZIAFhiLkf9k9ii4DHMVXIjtaqTE833Kp7Gjigg68KfvndwhfhlPkyz0Ofq3aRI',
@@ -28,21 +29,45 @@ var AccAnhKien = new Binance().options({
 })
 binanceListCopyTrade.push(
   {
-    name: 'Kiên',
+    name: 'Kiên_1',
     APIKEY: 'JLSZyDGla1SUotF2Mjkgp9NeyjKX2Cv1J4ryWiTKJ7g70UaIK51U8OpX2KeuRbvc',
     APISECRET: 'yjLkRmxqo3PoBpy01sYrSvywvAkOoGDVTBOZT4U8r1TXQijgwETZwTE2Z9twqimM',
     historyFile: 'kien.json'
-  }
+  },
+  {
+    name: 'Kiên_2',
+    APIKEY: 'HtDcglR83C76HYYeAiNQoBH1nQDzTjvApufMSerzZs9JEfEKd4wCkX9xsgQoPtzh',
+    APISECRET: 'MUVMwbTC23Dskq9EaiTxV5Xo4ibIQb6497Pd75rmpUhoHvx3XthsbU6sBv2WX15p',
+    historyFile: 'kien.json'
+  },
+
+
 )
 /* Account Binance*/
+router.get('/getMultiAccount', (req, res, next) => {
+  let listAccount = []
+  binanceListCopyTrade.map((item => {
+    let binanceAcc = new Binance().options({
+      APIKEY: item.APIKEY,
+      APISECRET: item.APISECRET,
+    })
+    listAccount.push(binanceAcc)
+  }))
+  let listTask = []
+  listAccount.map(item => {
+    listTask.push(item.futuresAccount())
+  })
+  Promise.all(listTask).then(data => {
+    let result = []
+    data.map((item, index) => {
+      result.push({ name: binanceListCopyTrade[index].name, data: item })
+    })
+    res.send(result)
+  })
+})
 router.get('/getAccount', async function (req, res, next) {
   //res.render('index', { title: 'RSI' });
-  let balance = await AccAnhKien.futuresBalance()
-  console.log(balance)
   let acc = await AccAnhKien.futuresAccount()
-  console.log(acc)
-  let account = await AccAnhKien.futuresPrices();
-  console.log(account)
   res.send(acc)
 });
 
@@ -165,7 +190,7 @@ async function getData(symbol, time) {
     }
     catch (err) {
       console.log('**** fetch error - limit IP')
-      console.log(err)
+     // console.log(err)
       reject(err)
     }
 
@@ -549,7 +574,7 @@ var sendNotification = function (data) {
 
   req.on('error', function (e) {
     console.log("ERROR:");
-    console.log(e);
+
   });
 
   req.write(JSON.stringify(data));
