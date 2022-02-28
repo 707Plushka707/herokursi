@@ -526,7 +526,7 @@ const main = async () => {
             console.log('End')
             console.log('===========================')
           }
-          delay(30 * 1000).then(data => {
+          delay(20 * 1000).then(data => {
             main()
           });
         })
@@ -534,7 +534,7 @@ const main = async () => {
       })
     } else {
       console.log('fetch error, reload after 30s')
-      delay(30 * 1000).then(data => {
+      delay(20 * 1000).then(data => {
         main()
       });
     }
