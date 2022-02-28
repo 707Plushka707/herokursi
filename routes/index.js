@@ -70,6 +70,12 @@ router.get('/getAccount', async function (req, res, next) {
   res.send(acc)
 });
 
+router.get('/getAccountOrderInDate', async function (req, res, next) {
+  //res.render('index', { title: 'RSI' });
+  let acc = await AccAnhKien.futuresAllOrders()
+  res.send(acc)
+});
+
 /**/
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -189,7 +195,7 @@ async function getData(symbol, time) {
     }
     catch (err) {
       console.log('**** fetch error - limit IP')
-     // console.log(err)
+      // console.log(err)
       reject(err)
     }
 
@@ -334,7 +340,6 @@ const main = async () => {
     "ZRXUSDT",
     "QTUMUSDT",
     "IOTAUSDT",
-    "BTCBUSD",
     "WAVESUSDT",
     "ADAUSDT",
     "LITUSDT",
@@ -345,7 +350,6 @@ const main = async () => {
     "ETCUSDT",
     "XMRUSDT",
     "YFIUSDT",
-    "FTTBUSD",
     "ETHUSDT",
     "ALICEUSDT",
     "ALPHAUSDT",
@@ -370,7 +374,6 @@ const main = async () => {
     "LINKUSDT",
     "CELRUSDT",
     "RSRUSDT",
-    "ADABUSD",
     "DGBUSDT",
     "SKLUSDT",
     "RENUSDT",
@@ -381,7 +384,6 @@ const main = async () => {
     "DODOUSDT",
     "KSMUSDT",
     "EGLDUSDT",
-    "BNBBUSD",
     "VETUSDT",
     "ONTUSDT",
     "IMXUSDT",
@@ -408,7 +410,6 @@ const main = async () => {
     "ZENUSDT",
     "ATOMUSDT",
     "NEARUSDT",
-    "SOLBUSD",
     "ENSUSDT",
     "BCHUSDT",
     "ATAUSDT",
@@ -417,7 +418,6 @@ const main = async () => {
     "ZECUSDT",
     "TLMUSDT",
     "ANTUSDT",
-    "ETHBUSD",
     "GALAUSDT",
     "AAVEUSDT",
     "GTCUSDT",
@@ -449,8 +449,6 @@ const main = async () => {
     "FTMUSDT",
     "YFIIUSDT",
     "BANDUSDT",
-    "XRPBUSD",
-    "DOGEBUSD",
     "XRPUSDT",
     "SXPUSDT",
     "CRVUSDT",

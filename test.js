@@ -14,27 +14,41 @@ binanceListCopyTrade.push(
         historyFile: 'kien.json'
     },
 )
+const express = require('express')
+const app = express()
+const port = 3000
+let binance = new Binance().options({
+    APIKEY: `JLSZyDGla1SUotF2Mjkgp9NeyjKX2Cv1J4ryWiTKJ7g70UaIK51U8OpX2KeuRbvc`,
+    APISECRET: `yjLkRmxqo3PoBpy01sYrSvywvAkOoGDVTBOZT4U8r1TXQijgwETZwTE2Z9twqimM`,
+})
+app.get('/', async (req, res) => {
+    res.send(await binance.futuresAllOrders())
 
-function main() {
-    console.log('start')
-    let listAccount = []
-    binanceListCopyTrade.map((item => {
-        let binanceAcc = new Binance().options({
-            APIKEY: item.APIKEY,
-            APISECRET: item.APISECRET,
-        })
-        listAccount.push(binanceAcc)
-    }))
-    let listTask = []
-    listAccount.map(item => {
-        listTask.push(item.futuresAccount())
-    })
-    Promise.all(listTask).then(data => {
-        let result = []
-        data.map((item, index) => {
-            result.push({ name: binanceListCopyTrade[index].name, data: item })
-        })
-        console.log(result)
-    })
+})
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
+async function main() {
+
+    // console.log('start')
+    // let listAccount = []
+    // binanceListCopyTrade.map((item => {
+    //     let binanceAcc = new Binance().options({
+    //         APIKEY: item.APIKEY,
+    //         APISECRET: item.APISECRET,
+    //     })
+    //     listAccount.push(binanceAcc)
+    // }))
+    // let listTask = []
+    // listAccount.map(item => {
+    //     listTask.push(item.futuresAccount())
+    // })
+    // Promise.all(listTask).then(data => {
+    //     let result = []
+    //     data.map((item, index) => {
+    //         result.push({ name: binanceListCopyTrade[index].name, data: item })
+    //     })
+    //     console.log(result)
+    // })
 }
-main();
