@@ -177,7 +177,7 @@ async function analize(symbol, timer) {
   return new Promise((resolve, reject) => {
     let allDataInTimer = []
     timer = ['1m', '5m', '15m', '30m', '1H', '4H', '1D']
-   
+
     // timer.forEach(item => {
     //   //5m
     //   //1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
@@ -550,7 +550,7 @@ const main = async () => {
             console.log('End')
             console.log('===========================')
           }
-          delay(4 * 1000).then(data => {
+          delay(5 * 1000).then(data => {
             main()
           });
         })
@@ -558,7 +558,7 @@ const main = async () => {
       })
     } else {
       console.log('fetch error, reload after 30s')
-      delay(4 * 1000).then(data => {
+      delay(5 * 1000).then(data => {
         main()
       });
     }
