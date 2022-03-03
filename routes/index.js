@@ -88,8 +88,13 @@ router.get('/rsi', (req, res, next) => {
 
   })
   res.sendFile(path.resolve('rsi.json'));
+});
+router.get('/analyze', (req, res, next) => {
+  analize("BTCUSDT", ["5m", "15m", "1h", "4h"]).then(data => {
+    console.log(data)
+    res.send(data)
+  })
 })
-
 //**** price notification */
 router.post('/setPriceNoti', (req, res, next) => {
   res.header("Content-Type", 'application/json');
@@ -119,6 +124,7 @@ router.post('/getClient', (req, res, next) => {
   res.header("Content-Type", 'application/json');
   res.sendFile(path.resolve('rsi.json'));
 })
+//
 
 
 
@@ -166,7 +172,26 @@ async function getRSI(symbol, timer, period) {
     console.log(err)
   });
 }
-
+//get another indicator
+async function analize(symbol, timer) {
+  return new Promise((resolve, reject) => {
+    let allDataInTimer = []
+    timer = ['1m', '5m', '15m', '30m', '1H', '4H', '1D']
+   
+    // timer.forEach(item => {
+    //   //5m
+    //   //1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
+    //   binance.candlesticks("BTCUSDT", item, (error, ticks, symbol) => {
+    //     allDataInTimer.push({
+    //       time: item,
+    //       ticks: ticks,
+    //     })
+    //   })
+    // })
+    console.log(allDataInTimer)
+    resolve(allDataInTimer)
+  })
+}
 //format lại theo kiểu lấy data ra trước rồi tính chart sau
 async function getData(symbol, time) {
   return new Promise((resolve, reject) => {
@@ -187,7 +212,6 @@ async function getData(symbol, time) {
             "name": symbol,
             "time": time,
             "last_tick": last_tick,
-
             "ticks": [...ticks]
           })
         }
@@ -526,7 +550,7 @@ const main = async () => {
             console.log('End')
             console.log('===========================')
           }
-          delay(20 * 1000).then(data => {
+          delay(3 * 1000).then(data => {
             main()
           });
         })

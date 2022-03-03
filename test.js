@@ -17,20 +17,26 @@ binanceListCopyTrade.push(
 const express = require('express')
 const app = express()
 const port = 3000
+//tk bảo
 let binance = new Binance().options({
     APIKEY: `JLSZyDGla1SUotF2Mjkgp9NeyjKX2Cv1J4ryWiTKJ7g70UaIK51U8OpX2KeuRbvc`,
     APISECRET: `yjLkRmxqo3PoBpy01sYrSvywvAkOoGDVTBOZT4U8r1TXQijgwETZwTE2Z9twqimM`,
 })
 app.get('/', async (req, res) => {
-    res.send(await binance.futuresAllOrders())
+    res.send(binance.futuresBookTickerStream(console.log))
 
 })
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+main()
 async function main() {
-
+    binance.websockets.depth(['BNBBTC'], (depth) => {
+        let {e:eventType, E:eventTime, s:symbol, u:updateId, b:bidDepth, a:askDepth} = depth;
+        console.info(symbol+" market depth update");
+        console.info(bidDepth, askDepth);
+      });
     // console.log('start')
     // let listAccount = []
     // binanceListCopyTrade.map((item => {
