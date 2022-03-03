@@ -550,7 +550,7 @@ const main = async () => {
             console.log('End')
             console.log('===========================')
           }
-          delay(5 * 1000).then(data => {
+          delay(10 * 1000).then(data => {
             main()
           });
         })
