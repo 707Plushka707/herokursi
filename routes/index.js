@@ -8,6 +8,7 @@ const Binance = require('node-binance-api');
 var RSI = require('technicalindicators').RSI;
 var BB = require('technicalindicators').BollingerBands;
 var _ = require('lodash');
+const { resourceUsage, abort } = require('process');
 
 const binance = new Binance().options({
   APIKEY: 'sDZIAFhiLkf9k9ii4DHMVXIjtaqTE833Kp7Gjigg68KfvndwhfhlPkyz0Ofq3aRI',
@@ -90,11 +91,74 @@ router.get('/rsi', (req, res, next) => {
   res.sendFile(path.resolve('rsi.json'));
 });
 router.get('/analyze', (req, res, next) => {
-  analize("BTCUSDT", ["5m", "15m", "1h", "4h"]).then(data => {
-    console.log(data)
-    res.send(data)
+  let timer = ["1m", "5m", "15m", "30m", "4h", "1h", "1d", "1w"]
+  let task = []
+  let symbol = "BTCUSDT"
+  timer.map(item => {
+    task.push(getData_forAnalyze(symbol, item))
+  })
+  Promise.all(task).then(data => {
+
+    let returnData = []
+    data.map(item => {
+      let ohcl = JSON.parse(JSON.stringify(item.ohcl))
+      let abandonedbaby = require('technicalindicators').abandonedbaby(ohcl)
+      let bearishengulfingpattern = require('technicalindicators').bearishengulfingpattern(ohcl)
+      let bullishengulfingpattern = require('technicalindicators').bullishengulfingpattern(ohcl)
+      let darkcloudcover = require('technicalindicators').darkcloudcover(ohcl)
+      let downsidetasukigap = require('technicalindicators').downsidetasukigap(ohcl)
+      let doji = require('technicalindicators').doji(ohcl)
+      let dragonflydoji = require('technicalindicators').dragonflydoji(ohcl)
+      let gravestonedoji = require('technicalindicators').gravestonedoji(ohcl)
+      let bullishharami = require('technicalindicators').bullishharami(ohcl)
+      let bearishharamicross = require('technicalindicators').bearishharamicross(ohcl)
+      let bullishharamicross = require('technicalindicators').bullishharamicross(ohcl)
+      let bullishmarubozu = require('technicalindicators').bullishmarubozu(ohcl)
+      let bearishmarubozu = require('technicalindicators').bearishmarubozu(ohcl)
+      let eveningdojistar = require('technicalindicators').eveningdojistar(ohcl)
+      let eveningstar = require('technicalindicators').eveningstar(ohcl)
+      let bearishharami = require('technicalindicators').bearishharami(ohcl)
+      let piercingline = require('technicalindicators').piercingline(ohcl)
+      let bullishspinningtop = require('technicalindicators').bullishspinningtop(ohcl)
+      let bearishspinningtop = require('technicalindicators').bearishspinningtop(ohcl)
+      let morningdojistar = require('technicalindicators').morningdojistar(ohcl)
+      let morningstar = require('technicalindicators').morningstar(ohcl)
+      let threeblackcrows = require('technicalindicators').threeblackcrows(ohcl)
+      let threewhitesoldiers = require('technicalindicators').threewhitesoldiers(ohcl)
+      //  let bullishhammer = require('technicalindicators').bullishhammer(ohcl)
+      //   let bearishhammer = require('technicalindicators').bearishhammer(ohcl)
+      // let bullishinvertedhammer = require('technicalindicators').bullishinvertedhammer(ohcl)
+      //let bearishinvertedhammer = require('technicalindicators').bearishinvertedhammer(ohcl)
+      let hammerpattern = require('technicalindicators').hammerpattern(ohcl)
+      let tweezertop = require('technicalindicators').tweezertop(ohcl)
+      let tweezerbottom = require('technicalindicators').tweezerbottom(ohcl)
+
+      returnData.push({
+        time: item.time,
+        abandonedbaby,
+        bearishengulfingpattern,
+        bullishengulfingpattern,
+        darkcloudcover,
+        downsidetasukigap,
+        doji,
+        dragonflydoji,
+        gravestonedoji,
+        bullishharami,
+        bearishharamicross,
+        bullishharamicross,
+        bullishmarubozu,
+        bearishmarubozu, eveningdojistar, eveningstar, bearishharami, piercingline, bullishspinningtop, bearishspinningtop, morningdojistar, morningstar, threeblackcrows, threewhitesoldiers
+        // , bullishhammer, bearishhammer,
+        //, bullishinvertedhammer, bearishinvertedhammer
+        , hammerpattern, tweezertop, tweezerbottom
+      })
+    })
+
+    res.send(returnData)
   })
 })
+
+
 //**** price notification */
 router.post('/setPriceNoti', (req, res, next) => {
   res.header("Content-Type", 'application/json');
@@ -173,24 +237,50 @@ async function getRSI(symbol, timer, period) {
   });
 }
 //get another indicator
-async function analize(symbol, timer) {
-  return new Promise((resolve, reject) => {
-    let allDataInTimer = []
-    timer = ['1m', '5m', '15m', '30m', '1H', '4H', '1D']
 
-    // timer.forEach(item => {
-    //   //5m
-    //   //1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
-    //   binance.candlesticks("BTCUSDT", item, (error, ticks, symbol) => {
-    //     allDataInTimer.push({
-    //       time: item,
-    //       ticks: ticks,
-    //     })
-    //   })
-    // })
-    console.log(allDataInTimer)
-    resolve(allDataInTimer)
-  })
+async function getData_forAnalyze(symbol, time) {
+  return new Promise((resolve, reject) => {
+    try {
+      binance.candlesticks(symbol, time, (error, ticks, symbol) => {
+        if (error) {
+          reject(error)
+        } else {
+          /* open: [42.70, 41.33],
+  high: [42.82,42.50],
+  close: [41.60,42.34],
+  low: [41.45,41.15],
+  */
+          let openV = []
+          let highV = []
+          let closeV = []
+          let lowV = []
+          ticks.map(item => {
+            let [time, open, high, low, close, volume, closeTime, assetVolume, trades, buyBaseVolume, buyAssetVolume, ignored] = item
+            openV.push(open)
+            highV.push(high)
+            closeV.push(close)
+            lowV.push(low)
+          })
+
+          resolve({
+            "name": symbol,
+            "time": time,
+            "ohcl": {
+              open: openV, high: highV, close: closeV, low: lowV
+            }
+          })
+        }
+      })
+    }
+    catch (err) {
+      console.log('**** fetch error - limit IP')
+      // console.log(err)
+      reject(err)
+    }
+
+  }).catch((err) => {
+    // console.log(err)
+  });
 }
 //format lại theo kiểu lấy data ra trước rồi tính chart sau
 async function getData(symbol, time) {
