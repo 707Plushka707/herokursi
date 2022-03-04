@@ -93,13 +93,16 @@ router.get('/rsi', (req, res, next) => {
 router.get('/analyze', (req, res, next) => {
   let timer = ["1m", "5m", "15m", "30m", "4h", "1h", "1d", "1w"]
   let task = []
-  let symbol = "BTCUSDT"
+  let symbol = req.query.symbol
+  if (!symbol) {
+    res.send([])
+  }
   timer.map(item => {
     task.push(getData_forAnalyze(symbol, item))
   })
 
   Promise.all(task).then(data => {
-    console.log(data)
+
     let returnData = []
     data.map(item => {
       let ohcl = JSON.parse(JSON.stringify(item.ohcl))
