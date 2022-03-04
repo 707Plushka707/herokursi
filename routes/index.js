@@ -94,6 +94,7 @@ router.get('/analyze', (req, res, next) => {
   let timer = ["1m", "5m", "15m", "30m", "4h", "1h", "1d", "1w"]
   let task = []
   let symbol = req.query.symbol
+  console.log(symbol)
   if (!symbol) {
     res.send([])
   }
