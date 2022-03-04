@@ -97,8 +97,9 @@ router.get('/analyze', (req, res, next) => {
   timer.map(item => {
     task.push(getData_forAnalyze(symbol, item))
   })
-  Promise.all(task).then(data => {
 
+  Promise.all(task).then(data => {
+    console.log(data)
     let returnData = []
     data.map(item => {
       let ohcl = JSON.parse(JSON.stringify(item.ohcl))
