@@ -44,9 +44,8 @@ binanceListCopyTrade.push(
 
 )
 /* Account Binance*/
-router.get('/getthongke', async (req, res, next) => {
-  let acc = await AccAnhKien.futuresIncome()
-  res.send(acc)
+router.get('/getMultiAccount', (req, res, next) => {
+  
 })
 router.get('/getAccount', async function (req, res, next) {
   //res.render('index', { title: 'RSI' });
