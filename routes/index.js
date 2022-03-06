@@ -45,7 +45,7 @@ binanceListCopyTrade.push(
 )
 /* Account Binance*/
 router.get('/getthongke', async (req, res, next) => {
-  let acc = await AccAnhKien.futuresIncome()
+  let acc = await AccAnhKien.futuresIncome({ limit: 1000 })
   res.send(acc)
 })
 router.get('/getAccount', async function (req, res, next) {
