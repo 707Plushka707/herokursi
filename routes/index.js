@@ -9,6 +9,7 @@ var RSI = require('technicalindicators').RSI;
 var BB = require('technicalindicators').BollingerBands;
 var _ = require('lodash');
 const { resourceUsage, abort } = require('process');
+const { start } = require('repl');
 
 const binance = new Binance().options({
   APIKEY: 'sDZIAFhiLkf9k9ii4DHMVXIjtaqTE833Kp7Gjigg68KfvndwhfhlPkyz0Ofq3aRI',
@@ -45,7 +46,10 @@ binanceListCopyTrade.push(
 )
 /* Account Binance*/
 router.get('/getthongke', async (req, res, next) => {
-  let acc = await AccAnhKien.futuresIncome({ limit: 1000 })
+  let date = new Date();
+  let start = new Date(date.getFullYear(), date.getMonth(), 1);
+  let end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  let acc = await AccAnhKien.futuresIncome({ limit: 1000, incomeType: 'REALIZED_PNL', startTime: start.getTime(), endTime: end.getTime() })
   res.send(acc)
 })
 router.get('/getAccount', async function (req, res, next) {
